@@ -43,7 +43,7 @@ async function checkDiff() {
 			vscode.window.showInformationMessage(`The sum of changes is ${changes}`);
 		}
 
-	} catch (err) {
+	} catch (err: any) {
 		vscode.window.showErrorMessage(err.message);
 	}
 }
