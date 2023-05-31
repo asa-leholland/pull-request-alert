@@ -7,7 +7,7 @@
     "url": "https://github.com/asa-leholland/pull-request-alert"
   },
   "description": "Warns you when code changes exceed a threshold to ensure review and collaboration. Uses Git diff to calculate changes and prompt Pull Requests.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.78.0"
   },
