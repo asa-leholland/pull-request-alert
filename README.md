@@ -19,7 +19,7 @@ This extension provides the following configuration options:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at [https://github.com/\\](https://github.com/%5C%5C)<username>/\<repository>.
+Bug reports and pull requests are welcome on GitHub at [https://github.com/asa-leholland/pull-request-alert](https://github.com/asa-leholland/pull-request-alert)
 
 ## License
 
