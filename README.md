@@ -1,8 +1,8 @@
-# Pull Request Alert
+# Pull Request Alert (Under Active Development right now 5/30/23)
 
 This extension allows you to check the difference between the current branch and the branch it was created from, and receive a warning when the sum of changes reaches a certain threshold.
 
-![Pull Request Alert](PullRequestAlertIcon.PNG)
+![Pull Request Alert](PullRequestAlertLogo.png)
 
 ## Installation
 
