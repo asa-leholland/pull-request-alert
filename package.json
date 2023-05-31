@@ -1,6 +1,7 @@
 {
   "name": "pull-request-alert",
   "displayName": "Pull Request Alert",
+  "publisher": "AsaLeHolland",
   "repository": {
     "type": "git",
     "url": "https://github.com/asa-leholland/pull-request-alert"},
