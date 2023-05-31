@@ -14,8 +14,8 @@ To check the difference between the current branch and the branch it was created
 
 This extension provides the following configuration options:
 
-- `diffChecker.threshold`: The threshold for displaying a warning to the user. Default is 200.
-- `diffChecker.autoCheck`: Automatically check when a file is saved. Default is false.
+- `pullRequestAlert.threshold`: The threshold for displaying a warning to the user. Default is 200.
+- `pullRequestAlert.autoCheck`: Automatically check when a file is saved. Default is false.
 
 ## Contributing
 
