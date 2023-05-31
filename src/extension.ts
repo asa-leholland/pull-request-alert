@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	vscode.workspace.onDidSaveTextDocument(async () => {
-		const config = vscode.workspace.getConfiguration('diffChecker');
+		const config = vscode.workspace.getConfiguration('pullRequestAlert');
 		const autoCheck = config.get<boolean>('autoCheck');
 
 		if (autoCheck) {
@@ -34,7 +34,7 @@ async function checkDiff() {
 		const diff = await executeCommand(`git diff ${branchPoint.trim()}..${currentBranch.trim()} --shortstat`, currentWorkspace.uri.fsPath);
 
 		const changes = parseDiff(diff);
-		const config = vscode.workspace.getConfiguration('diffChecker');
+		const config = vscode.workspace.getConfiguration('pullRequestAlert');
 		const threshold = config.get<number>('threshold') || DEFAULT_THRESHOLD;
 
 		if (changes >= threshold) {
@@ -49,7 +49,7 @@ async function checkDiff() {
 }
 
 function parseDiff(diff: string): number {
-	const matches = diff.match(/(\\d+) insertions.*(\\d+) deletions/);
+	const matches = diff.match(/(\d+) insertions.*(\d+) deletions/);
 	if (!matches) {
 		return 0;
 	}
