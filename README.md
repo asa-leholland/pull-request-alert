@@ -1,6 +1,8 @@
-# VS Code Extension
+# Pull Request Alert
 
 This extension allows you to check the difference between the current branch and the branch it was created from, and receive a warning when the sum of changes reaches a certain threshold.
+
+![Pull Request Alert](PullRequestAlertIcon.PNG)
 
 ## Installation
 
