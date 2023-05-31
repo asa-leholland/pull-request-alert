@@ -42,12 +42,14 @@ async function checkDiff() {
 		const config = vscode.workspace.getConfiguration('pullRequestAlert');
 		const threshold = config.get<number>('threshold') || DEFAULT_THRESHOLD;
 
-		if (changes >= threshold && currentBranch.trim() !== defaultBranch.trim()) {
-			vscode.window.showWarningMessage(`The sum of changes is ${changes}. It's time to submit a pull request.`);
-		} else if (changes >= threshold && currentBranch.trim() === defaultBranch.trim()) {
-			vscode.window.showWarningMessage(`The sum of changes is ${changes}. It's time to submit a pull request to merge your changes.`);
+		const details = `Additions: ${changes.additions}, Modifications: ${changes.modifications}, Deletions: ${changes.deletions}`;
+
+		if (changes.total >= threshold && currentBranch.trim() !== defaultBranch.trim()) {
+			vscode.window.showWarningMessage(`The sum of changes is ${changes.total}. It's time to submit a pull request. ${details}`);
+		} else if (changes.total >= threshold && currentBranch.trim() === defaultBranch.trim()) {
+			vscode.window.showWarningMessage(`The sum of changes is ${changes.total}. It's time to submit a pull request to merge your changes. ${details}`);
 		} else {
-			vscode.window.showInformationMessage(`The sum of changes is ${changes}.`);
+			vscode.window.showInformationMessage(`The sum of changes is ${changes.total}. ${details}`);
 		}
 
 	} catch (err: any) {
@@ -55,15 +57,35 @@ async function checkDiff() {
 	}
 }
 
-function parseDiff(diff: string): number {
+interface DiffStats {
+	total: number;
+	additions: number;
+	modifications: number;
+	deletions: number;
+}
+
+function parseDiff(diff: string): DiffStats {
 	const matches = diff.match(/(\d+) insertions.*(\d+) deletions/);
 	if (!matches) {
-		return 0;
+		return {
+			total: 0,
+			additions: 0,
+			modifications: 0,
+			deletions: 0
+		};
 	}
 
-	const insertions = parseInt(matches[1]);
+	const additions = parseInt(matches[1]);
 	const deletions = parseInt(matches[2]);
-	return insertions + deletions;
+	const modifications = Math.abs(additions + deletions);
+	const total = additions + deletions;
+
+	return {
+		total,
+		additions,
+		modifications,
+		deletions
+	};
 }
 
 function executeCommand(command: string, cwd: string): Promise<string> {

@@ -16,7 +16,7 @@ To check the difference between the current branch and the branch it was created
 
 This extension provides the following configuration options:
 
-- `pullRequestAlert.threshold`: The threshold for displaying a warning to the user. Default is 200.
+- `pullRequestAlert.threshold`: The diff threshold for displaying a warning to the user. This is calculated as the sum of additions, modifications and deletions. Default is 200.
 - `pullRequestAlert.autoCheck`: Automatically check when a file is saved. Default is false.
 
 ## Contributing
