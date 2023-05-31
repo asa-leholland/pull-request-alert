@@ -1,6 +1,9 @@
 {
   "name": "pull-request-alert",
   "displayName": "Pull Request Alert",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asa-leholland/pull-request-alert"},
   "description": "Pull Request Alert is a Visual Studio Code extension that helps developers stay on top of their code changes by providing timely warnings when the accumulated changes reach a specified threshold. It utilizes Git's diff functionality to calculate the sum of additions and deletions in the current branch compared to its base branch. When the sum exceeds the defined threshold, the extension displays a warning, reminding the developer to create a Pull Request and submit their changes for review. With Pull Request Alert, you can ensure that your code changes are properly reviewed and integrated into the project, promoting collaboration and code quality.",
   "version": "0.0.1",
   "engines": {
