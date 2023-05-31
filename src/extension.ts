@@ -3,7 +3,11 @@ import * as cp from 'child_process';
 
 const DEFAULT_THRESHOLD = 200;
 
+let outputChannel: vscode.OutputChannel;
+
 export function activate(context: vscode.ExtensionContext) {
+	outputChannel = vscode.window.createOutputChannel('Pull Request Alert');
+
 	const disposable = vscode.commands.registerCommand('extension.checkDiff', async () => {
 		await checkDiff();
 	});
@@ -31,12 +35,12 @@ async function checkDiff() {
 	try {
 		const currentBranch = await executeCommand('git rev-parse --abbrev-ref HEAD', currentWorkspace.uri.fsPath);
 		const defaultBranch = await executeCommand('git remote show origin | awk \'/HEAD branch/ {print $NF}\'', currentWorkspace.uri.fsPath);
-		console.log(`Current Branch: ${currentBranch}`);
-		console.log(`Default Branch: ${defaultBranch}`);
+		outputChannel.appendLine(`Current Branch: ${currentBranch}`);
+		outputChannel.appendLine(`Default Branch: ${defaultBranch}`);
 		const branchPoint = await executeCommand(`git merge-base ${currentBranch.trim()} ${defaultBranch.trim()}`, currentWorkspace.uri.fsPath);
-		console.log(`Branch Point: ${branchPoint}`);
+		outputChannel.appendLine(`Branch Point: ${branchPoint}`);
 		const diff = await executeCommand(`git diff ${branchPoint.trim()}..${currentBranch.trim()} --shortstat`, currentWorkspace.uri.fsPath);
-		console.log(`Diff: ${diff}`);
+		outputChannel.appendLine(`Diff: ${diff}`);
 
 		const changes = parseDiff(diff);
 		const config = vscode.workspace.getConfiguration('pullRequestAlert');
@@ -54,6 +58,8 @@ async function checkDiff() {
 
 	} catch (err: any) {
 		vscode.window.showErrorMessage(err.message);
+		const errorMessage = `Error: ${err.message}\n${err.stack}`;
+		outputChannel.appendLine(`Error: ${errorMessage}`);
 	}
 }
 
