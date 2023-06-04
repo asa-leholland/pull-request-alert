@@ -8,9 +8,10 @@ let outputChannel: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext) {
 	outputChannel = vscode.window.createOutputChannel('Pull Request Alert');
 
-	const disposable = vscode.commands.registerCommand('extension.checkDiff', async () => {
+	const disposable = vscode.commands.registerCommand('pull-request-alert.checkDiff', async () => {
 		await checkDiff();
 	});
+
 
 	context.subscriptions.push(disposable);
 
@@ -28,33 +29,32 @@ async function checkDiff() {
 	const currentWorkspace = vscode.workspace.workspaceFolders?.[0];
 
 	if (!currentWorkspace) {
-		vscode.window.showErrorMessage('No workspace is open');
+		vscode.window.showErrorMessage('No workspace is open. Please open a workspace to run the Pull Request Alert extension.');
 		return;
 	}
 
 	try {
-		const currentBranch = await executeCommand('git rev-parse --abbrev-ref HEAD', currentWorkspace.uri.fsPath);
-		const defaultBranch = await executeCommand('git remote show origin | awk \'/HEAD branch/ {print $NF}\'', currentWorkspace.uri.fsPath);
-		outputChannel.appendLine(`Current Branch: ${currentBranch}`);
-		outputChannel.appendLine(`Default Branch: ${defaultBranch}`);
-		const branchPoint = await executeCommand(`git merge-base ${currentBranch.trim()} ${defaultBranch.trim()}`, currentWorkspace.uri.fsPath);
-		outputChannel.appendLine(`Branch Point: ${branchPoint}`);
-		const diff = await executeCommand(`git diff ${branchPoint.trim()}..${currentBranch.trim()} --shortstat`, currentWorkspace.uri.fsPath);
-		outputChannel.appendLine(`Diff: ${diff}`);
 
-		const changes = parseDiff(diff);
 		const config = vscode.workspace.getConfiguration('pullRequestAlert');
 		const threshold = config.get<number>('threshold') || DEFAULT_THRESHOLD;
 
-		const details = `Additions: ${changes.additions}, Modifications: ${changes.modifications}, Deletions: ${changes.deletions}`;
-
-		if (changes.total >= threshold && currentBranch.trim() !== defaultBranch.trim()) {
-			vscode.window.showWarningMessage(`The sum of changes is ${changes.total}. It's time to submit a pull request. ${details}`);
-		} else if (changes.total >= threshold && currentBranch.trim() === defaultBranch.trim()) {
-			vscode.window.showWarningMessage(`The sum of changes is ${changes.total}. It's time to submit a pull request to merge your changes. ${details}`);
+		let numStagedLinesCommand = '';
+		if (process.platform === 'win32') {
+			console.log('Windows');
+			numStagedLinesCommand = 'git diff --numstat | findstr /R /C:"^[0-9]*" | for /F "tokens=1" %a in (\'findstr /R /C:"^[0-9]*"\') do set /a s+=%a';
 		} else {
-			vscode.window.showInformationMessage(`The sum of changes is ${changes.total}. ${details}`);
+			console.log('Not Windows');
+			numStagedLinesCommand = 'git diff --cached --numstat | grep -E "^[0-9]+" | cut -f1 | paste -sd+ - | bc';
 		}
+
+		const numAddedAndModifiedLines = await executeCommand(numStagedLinesCommand, currentWorkspace.uri.fsPath);
+
+		console.log(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
+		outputChannel.appendLine(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
+
+		const diffStats = parseDiff(numAddedAndModifiedLines);
+
+		console.log(`Diff stats: ${JSON.stringify(diffStats)}`);
 
 	} catch (err: any) {
 		vscode.window.showErrorMessage(err.message);
