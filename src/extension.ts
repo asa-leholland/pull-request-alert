@@ -25,6 +25,29 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 }
 
+async function calculateDeletedLines(): Promise<number> {
+	const currentWorkspace = vscode.workspace.workspaceFolders?.[0];
+
+	if (!currentWorkspace) {
+		vscode.window.showErrorMessage('No workspace is open. Please open a workspace to run the Pull Request Alert extension.');
+		return 0;
+	}
+
+    let numDeletedLines = 0;
+    try {
+        const numDeletedLinesCommand = 'git diff --cached --numstat | findstr /R /C:"^[0-9]*[[:space:]]+[0-9]*[[:space:]]" | for /F "tokens=2" %a in (\'findstr /R /C:"^[0-9]*[[:space:]]+[0-9]*[[:space:]]"\') do set /a s+=%a';
+        numDeletedLines = parseInt(await executeCommand(numDeletedLinesCommand, currentWorkspace.uri.fsPath));
+    } catch (error) {
+        console.log(`Error: ${error}`);
+        outputChannel.appendLine(`Error: ${error}`);
+    }
+
+    console.log(`Number of deleted lines: ${numDeletedLines}`);
+    outputChannel.appendLine(`Number of deleted lines: ${numDeletedLines}`);
+
+    return numDeletedLines;
+}
+
 async function checkDiff() {
 	const currentWorkspace = vscode.workspace.workspaceFolders?.[0];
 
@@ -44,13 +67,20 @@ async function checkDiff() {
 			numStagedLinesCommand = 'git diff --numstat | findstr /R /C:"^[0-9]*" | for /F "tokens=1" %a in (\'findstr /R /C:"^[0-9]*"\') do set /a s+=%a';
 		} else {
 			console.log('Not Windows');
+
 			numStagedLinesCommand = 'git diff --cached --numstat | grep -E "^[0-9]+" | cut -f1 | paste -sd+ - | bc';
 		}
 
 		const numAddedAndModifiedLines = await executeCommand(numStagedLinesCommand, currentWorkspace.uri.fsPath);
 
+		const numDeletedLines = await calculateDeletedLines();
+
+
 		console.log(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
 		outputChannel.appendLine(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
+
+		console.log(`Number of staged lines deleted: ${numDeletedLines}`);
+		outputChannel.appendLine(`Number of staged lines deleted: ${numDeletedLines}`);
 
 		const diffStats = parseDiff(numAddedAndModifiedLines);
 
