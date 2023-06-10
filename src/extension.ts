@@ -63,28 +63,18 @@ async function checkDiff() {
 
 		let numStagedLinesCommand = '';
 		if (process.platform === 'win32') {
-			console.log('Windows');
+			// console.log('Windows');
 			numStagedLinesCommand = 'git diff --numstat | findstr /R /C:"^[0-9]*" | for /F "tokens=1" %a in (\'findstr /R /C:"^[0-9]*"\') do set /a s+=%a';
 		} else {
-			console.log('Not Windows');
+			// console.log('Not Windows');
 
 			numStagedLinesCommand = 'git diff --cached --numstat | grep -E "^[0-9]+" | cut -f1 | paste -sd+ - | bc';
 		}
 
-		const numAddedAndModifiedLines = await executeCommand(numStagedLinesCommand, currentWorkspace.uri.fsPath);
-
-		const numDeletedLines = await calculateDeletedLines();
-
+		const numAddedAndModifiedLines: number = await executeCommandToInt(numStagedLinesCommand, currentWorkspace.uri.fsPath);
 
 		console.log(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
 		outputChannel.appendLine(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
-
-		console.log(`Number of staged lines deleted: ${numDeletedLines}`);
-		outputChannel.appendLine(`Number of staged lines deleted: ${numDeletedLines}`);
-
-		const diffStats = parseDiff(numAddedAndModifiedLines);
-
-		console.log(`Diff stats: ${JSON.stringify(diffStats)}`);
 
 	} catch (err: any) {
 		vscode.window.showErrorMessage(err.message);
@@ -93,6 +83,25 @@ async function checkDiff() {
 	}
 }
 
+async function executeCommandToInt(command: string, cwd: string): Promise<number> {
+	return new Promise((resolve, reject) => {
+	  cp.exec(command, { cwd }, (error, stdout, stderr) => {
+		if (error) {
+		  reject(error);
+		} else if (stderr) {
+		  reject(new Error(stderr));
+		} else {
+			const num = parseInt(stdout.trim().split(' ')[stdout.trim().split(' ').length - 1], 10);
+			if (isNaN(num)) {
+				reject(new Error(`Failed to parse output of command "${command}" as a number: ${stdout}`));
+			} else {
+				resolve(num);
+			}
+		}
+	  });
+	});
+  }
+
 interface DiffStats {
 	total: number;
 	additions: number;
@@ -100,29 +109,6 @@ interface DiffStats {
 	deletions: number;
 }
 
-function parseDiff(diff: string): DiffStats {
-	const matches = diff.match(/(\d+) insertions.*(\d+) deletions/);
-	if (!matches) {
-		return {
-			total: 0,
-			additions: 0,
-			modifications: 0,
-			deletions: 0
-		};
-	}
-
-	const additions = parseInt(matches[1]);
-	const deletions = parseInt(matches[2]);
-	const modifications = Math.abs(additions + deletions);
-	const total = additions + deletions;
-
-	return {
-		total,
-		additions,
-		modifications,
-		deletions
-	};
-}
 
 function executeCommand(command: string, cwd: string): Promise<string> {
 	return new Promise((resolve, reject) => {
