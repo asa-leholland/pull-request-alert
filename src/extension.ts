@@ -52,6 +52,8 @@ async function checkDiff() {
 		console.log(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
 		outputChannel.appendLine(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
 
+		// vscode.window.showInformationMessage(`Number of staged lines added and modified: ${numAddedAndModifiedLines}`);
+
 	} catch (err: any) {
 		vscode.window.showErrorMessage(err.message);
 		const errorMessage = `Error: ${err.message}\n${err.stack}`;
