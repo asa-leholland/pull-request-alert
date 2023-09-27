@@ -8,18 +8,18 @@ This extension allows you to check the difference between the current branch and
 
 This extension can be installed from the VS Code marketplace.
 
-## Usage
+<!-- ## Usage
 
-To check the difference between the current branch and the branch it was created from, execute the command `Check Diff` from the command palette. You can also configure the extension to automatically check when a file is saved.
+To check the difference between the current branch and the branch it was created from, execute the command `Check Diff` from the command palette. You can also configure the extension to automatically check when a file is saved. -->
 
-## Configuration
+<!-- ## Configuration
 
 This extension provides the following configuration options:
 
 - `pullRequestAlert.threshold`: The diff threshold for displaying a warning to the user. This is calculated as the sum of additions, modifications and deletions. Default is 200.
 - `pullRequestAlert.autoCheck`: Automatically check when a file is saved. Default is false.
 
-To configure the extension, go to the **Extensions** view in the VS Code sidebar, click on the gear icon next to the "Pull Request Alert" extension, and select **Extension Settings**. Alternatively, you can click [here](command:workbench.action.openSettings?%22%22) to open the settings directly.
+To configure the extension, go to the **Extensions** view in the VS Code sidebar, click on the gear icon next to the "Pull Request Alert" extension, and select **Extension Settings**. Alternatively, you can click [here](command:workbench.action.openSettings?%22%22) to open the settings directly. -->
 
 ## Contributing
 

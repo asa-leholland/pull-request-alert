@@ -1,70 +1,38 @@
 {
   "name": "pull-request-alert",
   "displayName": "Pull Request Alert",
+  "description": "Alerts when code changes surpass a threshold, prompting you to share your work.",
+  "version": "0.0.15",
   "publisher": "AsaLeHolland",
-  "icon": "PullRequestAlertLogoSmall.png",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/asa-leholland/pull-request-alert"
   },
-  "description": "Alerts when code changes surpass a threshold, prompting you to share your work.",
-  "version": "0.0.10",
+  "bugs": {
+    "url": "https://github.com/asa-leholland/pull-request-alert/issues"
+  },
   "engines": {
-    "vscode": "^1.78.0"
+    "vscode": "^1.73.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "pull-request-alert.checkDiff",
-        "title": "Check Diff"
-      }
-    ],
-    "configuration": {
-      "title": "Pull Request Alert",
-      "properties": {
-          "pullRequestAlert.threshold": {
-            "type": "number",
-            "default": 200,
-            "description": "The threshold for displaying a warning to the user (calculated using the number of lines added, removed, and modified)"
-          },
-          "pullRequestAlert.autoCheck": {
-            "type": "boolean",
-            "default": false,
-            "description": "Automatically check when a file is saved"
-          }
-      }
-    }
-  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint \"src/**/*.ts\"",
+    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.78.0",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "eslint": "^8.39.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
-    "ts-loader": "^9.4.2",
-    "webpack": "^5.81.0",
-    "webpack-cli": "^5.0.2",
-    "@vscode/test-electron": "^2.3.0"
+    "@types/vscode": "^1.73.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.26.0",
+    "typescript": "^5.2.2"
   }
 }
